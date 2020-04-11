@@ -90,7 +90,8 @@
   async function onButtonClick() {
 
     let serviceUuid = '4fafc201-1fb5-459e-8fcc-c5c9c331914b';
-    let characteristicUuid = 'beb5483e-36e1-4688-b7f5-ea07361b26a8';
+    let CHARACTERISTIC_UUID_Name = 'beb5483e-36e1-4688-b7f5-ea07361b26a8';
+    let CHARACTERISTIC_UUID_laps = 'beb5483e-36e1-4688-b7f5-ea07361b26a9';
 
     let filters = [];
     let options = {};
@@ -108,26 +109,30 @@
       log('Getting Service...');
       const service = await server.getPrimaryService(serviceUuid);
 
-      log('Getting Characteristic...');
-      const characteristic = await service.getCharacteristic(characteristicUuid);
+      log('Getting Name Characteristic...');
+      const characteristic_Name = await service.getCharacteristic(CHARACTERISTIC_UUID_Name);
+      log('Reading Name...');
+      const value = await characteristic_Name.readValue();
+      let i = 0;
+      let text = "";
+      for (i = 0; i < value.byteLength; i++) {
+        text += String.fromCharCode(value.getUint8(i));
+      }
+      log('> Name: ' + text);
 
-      log('> Characteristic UUID:  ' + characteristic.uuid);
-      log('> Broadcast:            ' + characteristic.properties.broadcast);
-      log('> Read:                 ' + characteristic.properties.read);
-      log('> Write w/o response:   ' +
-        characteristic.properties.writeWithoutResponse);
-      log('> Write:                ' + characteristic.properties.write);
-      log('> Notify:               ' + characteristic.properties.notify);
-      log('> Indicate:             ' + characteristic.properties.indicate);
-      log('> Signed Write:         ' +
-        characteristic.properties.authenticatedSignedWrites);
-      log('> Queued Write:         ' + characteristic.properties.reliableWrite);
-      log('> Writable Auxiliaries: ' +
-        characteristic.properties.writableAuxiliaries);
-      log('Reading Value...');
-      const value = await characteristic.readValue();
-      log('> Value ' + value.getUint8(0));
-      log('> Value:                '+ value);
+
+      log('Getting Lap Characteristic...');
+      const characteristic_Lap = await service.getCharacteristic(CHARACTERISTIC_UUID_laps);
+      log('Reading Laps...');
+      const value = await characteristic_Lap.readValue();
+      let i = 0;
+      let text = "";
+      for (i = 0; i < value.byteLength; i++) {
+        text += String.fromCharCode(value.getUint8(i));
+      }
+      log('> Laps: ' + text);
+
+
     } catch(error) {
       log('Argh! ' + error);
     }
