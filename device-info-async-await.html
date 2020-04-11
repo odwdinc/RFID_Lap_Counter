@@ -76,11 +76,13 @@
 
 <form>
   <button id="readButton">Get Bluetooth</button>
+  <button id="RefreshButton">Refresh</button>
 </form>
 
 <p>
+  Lap Count: 
   <input id="Laps" type="text" placeholder="Lap Count">
-  <button id="writeButton" disabled>Set Laps</button>
+  <button id="writeButton">Set Laps</button>
 </p>
 
 <h3>Live Output</h3>
@@ -92,7 +94,7 @@
 
 <script>
   var characteristic_Lap;
-  var Namevalue;
+  var characteristic_Name;
   async function onButtonClick() {
 
     let serviceUuid = '4fafc201-1fb5-459e-8fcc-c5c9c331914b';
@@ -110,26 +112,19 @@
         filters: [{services: [serviceUuid]}]});
       const server = await device.gatt.connect();
       const service = await server.getPrimaryService(serviceUuid);
-      const characteristic_Name = await service.getCharacteristic(CHARACTERISTIC_UUID_Name);
-      log('Reading Name...');
-      let decoder = new TextDecoder('utf-8');
-      Namevalue = await characteristic_Name.readValue();
-      log('> Name: ' + decoder.decode(Namevalue));
-
+      
+      characteristic_Name = await service.getCharacteristic(CHARACTERISTIC_UUID_Name);
       characteristic_Lap = await service.getCharacteristic(CHARACTERISTIC_UUID_laps);
-      log('Reading Laps...');
-      const Lapvalue = await characteristic_Lap.readValue();
-      log('> Laps: ' + decoder.decode(Lapvalue));
-      document.querySelector('#Laps').value =  decoder.decode(Lapvalue);
-
-
+      document.querySelector('#readButton').disabled = true;
+      document.querySelector('#writeButton').disabled = false;
+      onRefreshButtonButtonClick();
     } catch(error) {
       log('Argh! ' + error);
     }
   }
 
   async function onWriteButtonClick() {
-  if (!characteristic_Lap || !Namevalue) {
+    if (!characteristic_Lap || !Namevalue) {
       return;
     }
     let encoder = new TextEncoder('utf-8');
@@ -139,6 +134,26 @@
       await characteristic_Lap.writeValue(encoder.encode(value));
 
       log('> Lap Value: ' + value);
+    } catch(error) {
+      log('Argh! ' + error);
+    }
+  } 
+
+  async function onRefreshButtonButtonClick() {
+    if (!characteristic_Lap || !characteristic_Name) {
+      document.querySelector('#readButton').disabled = false;
+      document.querySelector('#writeButton').disabled = true;
+      return;
+    }
+    try {
+      log('Reading Name...');
+      let decoder = new TextDecoder('utf-8');
+      const Namevalue = await characteristic_Name.readValue();
+      log('> Name: ' + decoder.decode(Namevalue));
+      log('Reading Laps...');
+      const Lapvalue = await characteristic_Lap.readValue();
+      log('> Laps: ' + decoder.decode(Lapvalue));
+      document.querySelector('#Laps').value =  decoder.decode(Lapvalue);
     } catch(error) {
       log('Argh! ' + error);
     }
@@ -158,6 +173,11 @@
   document.querySelector('#writeButton').addEventListener('click', function() {
     onWriteButtonClick();
   });
+
+  document.querySelector('#RefreshButton').addEventListener('click', function() {
+    onRefreshButtonButtonClick();
+  });
+
 
 </script>
 
