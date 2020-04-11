@@ -76,7 +76,6 @@
 
 <form>
   <button id="readButton">Get Bluetooth</button>
-  <button id="ReButton" disabled>Refresh Tag</button>
 </form>
 
 <p>
@@ -105,41 +104,22 @@
     let options = {};
     filters.push({services: []});
     options.filters
-    var device;
+
     try {
       log('Requesting Bluetooth Device...');
-       device = await navigator.bluetooth.requestDevice({
+      const device = await navigator.bluetooth.requestDevice({
         filters: [{services: [serviceUuid]}]});
-    } catch(error) {
-      log('Argh! ' + error);
-      return;
-    }
-
-    var server = null;
-    var count = 0;
-    while (server == null && count < 4){
-      try {
-        server = await device.gatt.connect();
-        count = count + 1
-      } catch(error) {
-        log('Argh! ' + error);
-      }
-    }
-
-    try {
-      log('connected To Device...');
+      const server = await device.gatt.connect();
       const service = await server.getPrimaryService(serviceUuid);
       
       characteristic_Name = await service.getCharacteristic(CHARACTERISTIC_UUID_Name);
       characteristic_Lap = await service.getCharacteristic(CHARACTERISTIC_UUID_laps);
       document.querySelector('#readButton').disabled = true;
       document.querySelector('#writeButton').disabled = false;
-      document.querySelector('#ReButton').disabled = false;
       onReButtonButtonClick();
     } catch(error) {
       log('Argh! ' + error);
     }
-
   }
 
   async function onWriteButtonClick() {
@@ -191,10 +171,6 @@
 
   document.querySelector('#writeButton').addEventListener('click', function() {
     onWriteButtonClick();
-  });
-
-  document.querySelector('#ReButton').addEventListener('click', function() {
-    onReButtonButtonClick();
   });
 
 
