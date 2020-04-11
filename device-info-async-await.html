@@ -110,8 +110,23 @@
       log('Requesting Bluetooth Device...');
       const device = await navigator.bluetooth.requestDevice({
         filters: [{services: [serviceUuid]}]});
-      console.log(device)
-      const server = await device.gatt.connect();
+    } catch(error) {
+      log('Argh! ' + error);
+    }
+
+    var server = null;
+    var count = 0;
+    while (server == null || count < 4){
+      try {
+        const server = await device.gatt.connect();
+      } catch(error) {
+        log('Argh! ' + error);
+        count = count + 1
+      }
+    }
+
+    try {
+      log('connected To Device...');
       const service = await server.getPrimaryService(serviceUuid);
       
       characteristic_Name = await service.getCharacteristic(CHARACTERISTIC_UUID_Name);
@@ -123,6 +138,7 @@
     } catch(error) {
       log('Argh! ' + error);
     }
+
   }
 
   async function onWriteButtonClick() {
