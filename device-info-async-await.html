@@ -75,8 +75,13 @@
 </script>
 
 <form>
-  <button>Get Bluetooth</button>
+  <button id="readButton">Get Bluetooth</button>
 </form>
+
+<p>
+  <input id="Laps" type="text" placeholder="Lap Count">
+  <button id="writeButton" disabled>Set Laps</button>
+</p>
 
 <h3>Live Output</h3>
 <div id="output" class="output">
@@ -86,7 +91,8 @@
 </div>
 
 <script>
-
+  var characteristic_Lap;
+  var Namevalue;
   async function onButtonClick() {
 
     let serviceUuid = '4fafc201-1fb5-459e-8fcc-c5c9c331914b';
@@ -102,34 +108,19 @@
       log('Requesting Bluetooth Device...');
       const device = await navigator.bluetooth.requestDevice({
         filters: [{services: [serviceUuid]}]});
-
-      log('Connecting to GATT Server...');
       const server = await device.gatt.connect();
-
-      log('Getting Service...');
       const service = await server.getPrimaryService(serviceUuid);
-
-      log('Getting Name Characteristic...');
       const characteristic_Name = await service.getCharacteristic(CHARACTERISTIC_UUID_Name);
       log('Reading Name...');
-      const Namevalue = await characteristic_Name.readValue();
-      let i = 0;
-      let text = "";
-      for (i = 0; i < Namevalue.byteLength; i++) {
-        text += String.fromCharCode(Namevalue.getUint8(i));
-      }
-      log('> Name: ' + text);
+      let decoder = new TextDecoder('utf-8');
+      Namevalue = await characteristic_Name.readValue();
+      log('> Name: ' + decoder.decode(Namevalue));
 
-
-      log('Getting Lap Characteristic...');
-      const characteristic_Lap = await service.getCharacteristic(CHARACTERISTIC_UUID_laps);
+      characteristic_Lap = await service.getCharacteristic(CHARACTERISTIC_UUID_laps);
       log('Reading Laps...');
       const Lapvalue = await characteristic_Lap.readValue();
-      text = "";
-      for (i = 0; i < Lapvalue.byteLength; i++) {
-        text += String.fromCharCode(Lapvalue.getUint8(i));
-      }
-      log('> Laps: ' + text);
+      log('> Laps: ' + decoder.decode(Lapvalue));
+      document.querySelector('#Laps').value =  decoder.decode(Lapvalue);
 
 
     } catch(error) {
@@ -137,7 +128,24 @@
     }
   }
 
-  document.querySelector('form').addEventListener('submit', function(event) {
+  async function onWriteButtonClick() {
+  if (!characteristic_Lap || !Namevalue) {
+      return;
+    }
+    let encoder = new TextEncoder('utf-8');
+    let value = document.querySelector('#Laps').value;
+    try {
+      log('Setting Lap Value...');
+      await characteristic_Lap.writeValue(encoder.encode(value));
+
+      log('> Lap Value: ' + value);
+    } catch(error) {
+      log('Argh! ' + error);
+    }
+  } 
+
+
+  document.querySelector('#readButton').addEventListener('click', function(event) {
     event.stopPropagation();
     event.preventDefault();
 
@@ -146,6 +154,11 @@
       onButtonClick();
     }
   });
+
+  document.querySelector('#writeButton').addEventListener('click', function() {
+    onWriteButtonClick();
+  });
+
 </script>
 
 <script>
