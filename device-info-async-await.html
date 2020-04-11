@@ -119,7 +119,7 @@
     var count = 0;
     while (server == null && count < 4){
       try {
-        const server = await device.gatt.connect();
+        server = await device.gatt.connect();
         count = count + 1
       } catch(error) {
         log('Argh! ' + error);
