@@ -105,23 +105,24 @@
     let options = {};
     filters.push({services: []});
     options.filters
-
+    var device;
     try {
       log('Requesting Bluetooth Device...');
-      const device = await navigator.bluetooth.requestDevice({
+       device = await navigator.bluetooth.requestDevice({
         filters: [{services: [serviceUuid]}]});
     } catch(error) {
       log('Argh! ' + error);
+      return;
     }
 
     var server = null;
     var count = 0;
-    while (server == null || count < 4){
+    while (server == null && count < 4){
       try {
         const server = await device.gatt.connect();
+        count = count + 1
       } catch(error) {
         log('Argh! ' + error);
-        count = count + 1
       }
     }
 
