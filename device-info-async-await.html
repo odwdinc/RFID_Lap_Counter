@@ -85,7 +85,7 @@
   <button id="writeButton" disabled>Set Laps</button>
 </p>
 
-<h3>Live Output</h3>
+<h3>Output:</h3>
 <div id="output" class="output">
   <div id="content"></div>
   <div id="status"></div>
@@ -117,6 +117,7 @@
       characteristic_Lap = await service.getCharacteristic(CHARACTERISTIC_UUID_laps);
       document.querySelector('#readButton').disabled = true;
       document.querySelector('#writeButton').disabled = false;
+      document.querySelector('#RefreshButton').disabled = false;
       onRefreshButtonButtonClick();
     } catch(error) {
       log('Argh! ' + error);
