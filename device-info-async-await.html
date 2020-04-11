@@ -76,13 +76,13 @@
 
 <form>
   <button id="readButton">Get Bluetooth</button>
-  <button id="RefreshButton">Refresh</button>
+  <button id="RefreshButton" disabled>Refresh</button>
 </form>
 
 <p>
   Lap Count: 
   <input id="Laps" type="text" placeholder="Lap Count">
-  <button id="writeButton">Set Laps</button>
+  <button id="writeButton" disabled>Set Laps</button>
 </p>
 
 <h3>Live Output</h3>
@@ -124,7 +124,7 @@
   }
 
   async function onWriteButtonClick() {
-    if (!characteristic_Lap || !Namevalue) {
+    if (!characteristic_Lap || !characteristic_Name) {
       return;
     }
     let encoder = new TextEncoder('utf-8');
