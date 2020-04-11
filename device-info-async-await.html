@@ -125,8 +125,7 @@
       const characteristic_Lap = await service.getCharacteristic(CHARACTERISTIC_UUID_laps);
       log('Reading Laps...');
       const Lapvalue = await characteristic_Lap.readValue();
-      let i = 0;
-      let text = "";
+      text = "";
       for (i = 0; i < Lapvalue.byteLength; i++) {
         text += String.fromCharCode(Lapvalue.getUint8(i));
       }
