@@ -124,6 +124,10 @@
       log('> Queued Write:         ' + characteristic.properties.reliableWrite);
       log('> Writable Auxiliaries: ' +
         characteristic.properties.writableAuxiliaries);
+      log('Reading Value...');
+      const value = await characteristic.readValue();
+      log('> Value ' + value.getUint8(0));
+      log('> Value:                '+ value);
     } catch(error) {
       log('Argh! ' + error);
     }
