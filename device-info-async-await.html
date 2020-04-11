@@ -112,11 +112,11 @@
       log('Getting Name Characteristic...');
       const characteristic_Name = await service.getCharacteristic(CHARACTERISTIC_UUID_Name);
       log('Reading Name...');
-      const value = await characteristic_Name.readValue();
+      const Namevalue = await characteristic_Name.readValue();
       let i = 0;
       let text = "";
-      for (i = 0; i < value.byteLength; i++) {
-        text += String.fromCharCode(value.getUint8(i));
+      for (i = 0; i < Namevalue.byteLength; i++) {
+        text += String.fromCharCode(Namevalue.getUint8(i));
       }
       log('> Name: ' + text);
 
@@ -124,11 +124,11 @@
       log('Getting Lap Characteristic...');
       const characteristic_Lap = await service.getCharacteristic(CHARACTERISTIC_UUID_laps);
       log('Reading Laps...');
-      const value = await characteristic_Lap.readValue();
+      const Lapvalue = await characteristic_Lap.readValue();
       let i = 0;
       let text = "";
-      for (i = 0; i < value.byteLength; i++) {
-        text += String.fromCharCode(value.getUint8(i));
+      for (i = 0; i < Lapvalue.byteLength; i++) {
+        text += String.fromCharCode(Lapvalue.getUint8(i));
       }
       log('> Laps: ' + text);
 
