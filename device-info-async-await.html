@@ -76,7 +76,7 @@
 
 <form>
   <button id="readButton">Get Bluetooth</button>
-  <button id="RefreshButton" disabled>Refresh</button>
+  <button id="ReButton" disabled>Refresh Tag</button>
 </form>
 
 <p>
@@ -110,6 +110,7 @@
       log('Requesting Bluetooth Device...');
       const device = await navigator.bluetooth.requestDevice({
         filters: [{services: [serviceUuid]}]});
+      console.log(device)
       const server = await device.gatt.connect();
       const service = await server.getPrimaryService(serviceUuid);
       
@@ -118,7 +119,7 @@
       document.querySelector('#readButton').disabled = true;
       document.querySelector('#writeButton').disabled = false;
       document.querySelector('#RefreshButton').disabled = false;
-      onRefreshButtonButtonClick();
+      onReButtonButtonClick();
     } catch(error) {
       log('Argh! ' + error);
     }
@@ -140,7 +141,7 @@
     }
   } 
 
-  async function onRefreshButtonButtonClick() {
+  async function onReButtonButtonClick() {
     if (!characteristic_Lap || !characteristic_Name) {
       document.querySelector('#readButton').disabled = false;
       document.querySelector('#writeButton').disabled = true;
@@ -175,8 +176,8 @@
     onWriteButtonClick();
   });
 
-  document.querySelector('#RefreshButton').addEventListener('click', function() {
-    onRefreshButtonButtonClick();
+  document.querySelector('#ReButton').addEventListener('click', function() {
+    onReButtonButtonClick();
   });
 
 
