@@ -161,8 +161,9 @@
   }
 
   function handleLapsChanged(event) {
-    let Laps = event.target.value.getUint8(0);
-    log('> Laps Left: ' + Laps);
+    let decoder = new TextDecoder('utf-8');
+    let Laps = event.target.value.readValue();
+    log('> Laps Left: ' + decoder.decode(Laps));
   }
 
   async function onWriteButtonClick() {
