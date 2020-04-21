@@ -86,7 +86,7 @@
 </p>
 <p>
   Mode:
-  <input id="CTTB" type="text" placeholder=".">
+  <input id="CTTB" type="text" placeholder="..">
   <button id="writeCTTBButton" disabled>Set Info</button>
 </p>
 
@@ -108,7 +108,7 @@
   var characteristic_Lap;
   var characteristic_Name;
   var characteristic_DeviceName;
-  var characteristic_DevicePos;
+  //var characteristic_DevicePos;
   var bluetoothDevice;
 
   async function requestDevice() {
@@ -151,7 +151,7 @@
     let CHARACTERISTIC_UUID_Name = 'beb5483e-36e1-4688-b7f5-ea07361b26a8';
     let CHARACTERISTIC_UUID_laps = 'beb5483e-36e1-4688-b7f5-ea07361b26a9';
     let CHARACTERISTIC_UUID_DeviceName = "beb5483e-36e1-4688-b7f5-ea07361b26aa";
-    let CHARACTERISTIC_UUID_DevicePos = "beb5483e-36e1-4688-b7f5-ea07361b26ab";
+    //let CHARACTERISTIC_UUID_DevicePos = "beb5483e-36e1-4688-b7f5-ea07361b26ab";
 
     log('Connecting to GATT Server...');
     const server = await bluetoothDevice.gatt.connect();
@@ -159,7 +159,7 @@
     
     characteristic_Name = await service.getCharacteristic(CHARACTERISTIC_UUID_Name);
     characteristic_DeviceName = await service.getCharacteristic(CHARACTERISTIC_UUID_DeviceName);
-    characteristic_DevicePos = await service.getCharacteristic(CHARACTERISTIC_UUID_DevicePos);
+    //characteristic_DevicePos = await service.getCharacteristic(CHARACTERISTIC_UUID_DevicePos);
 
     characteristic_Lap = await service.getCharacteristic(CHARACTERISTIC_UUID_laps);
     characteristic_Lap.addEventListener('characteristicvaluechanged',
@@ -243,8 +243,8 @@
       const CTNm = await characteristic_DeviceName.readValue();
       document.querySelector('#CTName').value =  decoder.decode(CTNm);
 
-      const CTpo= await characteristic_DevicePos.readValue();
-      document.querySelector('#CTTB').value =  decoder.decode(CTpo);
+      //const CTpo= await characteristic_DevicePos.readValue();
+      //document.querySelector('#CTTB').value =  decoder.decode(CTpo);
 
     } catch(error) {
       log('Argh! ' + error);
@@ -266,7 +266,7 @@
 
   async function onStopNotificationsButtonClick() {
     try {
-      log('Stopping Battery Level Notifications...');
+      log('Stopping Lap Notifications...');
       await characteristic_Lap.stopNotifications();
 
       log('> Notifications stopped');
@@ -313,9 +313,9 @@
      onWriteCTButtonClick();
   });
 
-  document.querySelector('#writeCTTBButton').addEventListener('click', function() {
-     onWriteCTTBButtonClick();
-  });
+  //document.querySelector('#writeCTTBButton').addEventListener('click', function() {
+     //onWriteCTTBButtonClick();
+  //});
 
 
   
