@@ -82,7 +82,7 @@
 <p>
 
   Lap Count: 
-  <input id="Laps" type="text" placeholder="Lap Count">
+  <input id="Laps" type="text" placeholder="Change Lap Count">
   <button id="writeButton" disabled>Set Laps</button>
 </p>
 
@@ -154,7 +154,7 @@
     characteristic_Lap.addEventListener('characteristicvaluechanged',
     handleLapsChanged);
 
-    document.querySelector('#readButton').disabled = true;
+    //document.querySelector('#readButton').disabled = true;
     document.querySelector('#writeButton').disabled = false;
     document.querySelector('#startNotifications').disabled = false;
     document.querySelector('#stopNotifications').disabled = true;
@@ -163,7 +163,9 @@
   function handleLapsChanged(event) {
     let decoder = new TextDecoder('utf-8');
     let Laps = event.target.value.readValue();
-    log('> Laps Left: ' + decoder.decode(Laps));
+    log('> Laps Left: ');
+    const Namevalue = await characteristic_Name.readValue();
+    log('> ' + decoder.decode(Namevalue) + ' > ' + decoder.decode(Laps));
   }
 
   async function onWriteButtonClick() {
@@ -184,7 +186,7 @@
 
   async function onReButtonButtonClick() {
     if (!characteristic_Lap || !characteristic_Name) {
-      document.querySelector('#readButton').disabled = false;
+      //document.querySelector('#readButton').disabled = false;
       document.querySelector('#writeButton').disabled = true;
       return;
     }
@@ -204,7 +206,7 @@
 
   async function onStartNotificationsButtonClick() {
     try {
-      log('Starting Battery Level Notifications...');
+      log('Starting Lap Notifications...');
       await characteristic_Lap.startNotifications();
 
       log('> Notifications started');
