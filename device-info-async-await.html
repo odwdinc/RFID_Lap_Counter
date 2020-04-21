@@ -105,9 +105,7 @@
 
     log('Requesting any Bluetooth Device...');
     bluetoothDevice = await navigator.bluetooth.requestDevice({
-        filters: [{services: [serviceUuid]}],// <- Prefer filters to save energy & show relevant devices.
-        acceptAllDevices: true,
-        //optionalServices: ['battery_service']
+        filters: [{services: [serviceUuid]}]// <- Prefer filters to save energy & show relevant devices.
       });
     bluetoothDevice.addEventListener('gattserverdisconnected', onDisconnected);
   }
