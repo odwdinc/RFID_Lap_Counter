@@ -80,7 +80,14 @@
 <button id="reset">Reset Bluetooth Device</button>
 
 <p>
+  Lap Counter: 
+  <input id="CTName" type="text" placeholder=".">
+  <input id="CTTB" type="text" placeholder=".">
+  <button id="writeCTButton" disabled>Set Info</button>
+</p>
 
+</br>
+<p>
   Lap Count: 
   <input id="Laps" type="text" placeholder="Change Lap Count">
   <button id="writeButton" disabled>Set Laps</button>
@@ -148,9 +155,10 @@
     const service = await server.getPrimaryService(serviceUuid);
     
     characteristic_Name = await service.getCharacteristic(CHARACTERISTIC_UUID_Name);
-    characteristic_Lap = await service.getCharacteristic(CHARACTERISTIC_UUID_laps);
     characteristic_DeviceName = await service.getCharacteristic(CHARACTERISTIC_UUID_DeviceName);
     characteristic_DevicePos = await service.getCharacteristic(CHARACTERISTIC_UUID_DevicePos);
+
+    characteristic_Lap = await service.getCharacteristic(CHARACTERISTIC_UUID_laps);
     characteristic_Lap.addEventListener('characteristicvaluechanged',
     handleLapsChanged);
 
@@ -160,12 +168,13 @@
     document.querySelector('#stopNotifications').disabled = true;
   }
 
-  async function handleLapsChanged(event) {
-    let decoder = new TextDecoder('utf-8');
-    let Laps = event.target.value.readValue();
+  function handleLapsChanged(event) {
     log('> Laps Left: ');
-    const Namevalue = await characteristic_Name.readValue();
-    log('> ' + decoder.decode(Namevalue) + ' > ' + decoder.decode(Laps));
+    let decoder = new TextDecoder('utf-8');
+    let Laps = event.target.value;
+    
+    //const Namevalue = await characteristic_Name.readValue(); //'> '+ decoder.decode(Namevalue) +
+    log(' > ' + decoder.decode(Laps));
   }
 
   async function onWriteButtonClick() {
