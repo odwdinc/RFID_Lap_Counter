@@ -5,48 +5,6 @@
 </script>
 
 <script>
-  window.addEventListener('DOMContentLoaded', function() {
-    const searchParams = new URL(location).searchParams;
-    const inputs = Array.from(document.querySelectorAll('input[id]'));
-
-    inputs.forEach(input => {
-      if (searchParams.has(input.id)) {
-        if (input.type == 'checkbox') {
-          input.checked = searchParams.get(input.id);
-        } else {
-          input.value = searchParams.get(input.id);
-          input.blur();
-        }
-      }
-      if (input.type == 'checkbox') {
-        input.addEventListener('change', function(event) {
-          const newSearchParams = new URL(location).searchParams;
-          if (event.target.checked) {
-            newSearchParams.set(input.id, event.target.checked);
-          } else {
-            newSearchParams.delete(input.id);
-          }
-          history.replaceState({}, '', Array.from(newSearchParams).length ?
-              location.pathname + '?' + newSearchParams : location.pathname);
-        });
-      } else {
-        input.addEventListener('input', function(event) {
-          const newSearchParams = new URL(location).searchParams;
-          if (event.target.value) {
-            newSearchParams.set(input.id, event.target.value);
-          } else {
-            newSearchParams.delete(input.id);
-          }
-          history.replaceState({}, '', Array.from(newSearchParams).length ?
-              location.pathname + '?' + newSearchParams : location.pathname);
-        });
-      }
-    });
-  });
-</script>
-
-
-<script>
   var ChromeSamples = {
     log: function() {
       var line = Array.prototype.slice.call(arguments).map(function(argument) {
@@ -82,12 +40,12 @@
 <p>
   Lap Counter Name: 
   <input id="CTName" type="text" placeholder=".">
-  <button id="writeCTButton" disabled>Set Info</button>
+  <button id="writeCTButton" disabled>Set Name</button>
 </p>
 <p>
   Mode:
-  <input id="CTTB" type="text" placeholder="..">
-  <button id="writeCTTBButton" disabled>Set Info</button>
+  <input id="CTPos" type="text" placeholder="..">
+  <button id="writeCTPosButton" disabled>Set Mode</button>
 </p>
 
 <p>
@@ -151,7 +109,7 @@
     let CHARACTERISTIC_UUID_Name = 'beb5483e-36e1-4688-b7f5-ea07361b26a8';
     let CHARACTERISTIC_UUID_laps = 'beb5483e-36e1-4688-b7f5-ea07361b26a9';
     let CHARACTERISTIC_UUID_DeviceName = "beb5483e-36e1-4688-b7f5-ea07361b26aa";
-    //let CHARACTERISTIC_UUID_DevicePos = "beb5483e-36e1-4688-b7f5-ea07361b26ab";
+    let CHARACTERISTIC_UUID_DevicePos = "beb5483e-36e1-4688-b7f5-ea07361b26f1";
 
     log('Connecting to GATT Server...');
     const server = await bluetoothDevice.gatt.connect();
@@ -159,16 +117,16 @@
     
     characteristic_Name = await service.getCharacteristic(CHARACTERISTIC_UUID_Name);
     characteristic_DeviceName = await service.getCharacteristic(CHARACTERISTIC_UUID_DeviceName);
-    //characteristic_DevicePos = await service.getCharacteristic(CHARACTERISTIC_UUID_DevicePos);
+    characteristic_DevicePos = await service.getCharacteristic(CHARACTERISTIC_UUID_DevicePos);
 
     characteristic_Lap = await service.getCharacteristic(CHARACTERISTIC_UUID_laps);
     characteristic_Lap.addEventListener('characteristicvaluechanged',
     handleLapsChanged);
 
-    //document.querySelector('#readButton').disabled = true;
+    document.querySelector('#readButton').disabled = true;
     document.querySelector('#writeButton').disabled = false;
     document.querySelector('#writeCTButton').disabled = false;
-    document.querySelector('#writeCTTBButton').disabled = false;
+    document.querySelector('#writeCTPosButton').disabled = false;
     document.querySelector('#startNotifications').disabled = false;
     document.querySelector('#stopNotifications').disabled = true;
   }
@@ -210,12 +168,12 @@
     }  
   }
 
-  async function onWriteCTTBButtonClick() {
+  async function onWriteCTPosButtonClick() {
     if (!characteristic_DevicePos) {
       return;
     }
     let encoder = new TextEncoder('utf-8');
-    let value = document.querySelector('#CTTB').value;
+    let value = document.querySelector('#CTPos').value;
     try {
       await characteristic_DevicePos.writeValue(encoder.encode(value));
     } catch(error) {
@@ -243,8 +201,8 @@
       const CTNm = await characteristic_DeviceName.readValue();
       document.querySelector('#CTName').value =  decoder.decode(CTNm);
 
-      //const CTpo= await characteristic_DevicePos.readValue();
-      //document.querySelector('#CTTB').value =  decoder.decode(CTpo);
+      const CTpo= await characteristic_DevicePos.readValue();
+      document.querySelector('#CTPos').value =  decoder.decode(CTpo);
 
     } catch(error) {
       log('Argh! ' + error);
@@ -313,12 +271,10 @@
      onWriteCTButtonClick();
   });
 
-  //document.querySelector('#writeCTTBButton').addEventListener('click', function() {
-     //onWriteCTTBButtonClick();
-  //});
+  document.querySelector('#writeCTPosButton').addEventListener('click', function() {
+     onWriteCTPosButtonClick();
+  });
 
-
-  
 
   document.querySelector('#startNotifications').addEventListener('click', function(event) {
     if (isWebBluetoothEnabled()) {
