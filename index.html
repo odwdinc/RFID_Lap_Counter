@@ -160,7 +160,7 @@
     document.querySelector('#stopNotifications').disabled = true;
   }
 
-  function handleLapsChanged(event) {
+  async function handleLapsChanged(event) {
     let decoder = new TextDecoder('utf-8');
     let Laps = event.target.value.readValue();
     log('> Laps Left: ');
