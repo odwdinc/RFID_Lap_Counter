@@ -94,6 +94,7 @@
 </div>
 
 <script>
+  var serviceUuid = '4fafc201-1fb5-459e-8fcc-c5c9c331914b';
   var characteristic_Lap;
   var characteristic_Name;
   var characteristic_DeviceName;
@@ -101,9 +102,10 @@
   var bluetoothDevice;
 
   async function requestDevice() {
+
     log('Requesting any Bluetooth Device...');
     bluetoothDevice = await navigator.bluetooth.requestDevice({
-     // filters: [...] <- Prefer filters to save energy & show relevant devices.
+        filters: [{services: [serviceUuid]}],// <- Prefer filters to save energy & show relevant devices.
         acceptAllDevices: true,
         //optionalServices: ['battery_service']
       });
@@ -128,7 +130,7 @@
       //  filters: [{services: [serviceUuid]}]});
 
       await onReButtonButtonClick();
-      
+
     } catch(error) {
       log('Argh! ' + error);
     }
@@ -138,15 +140,13 @@
     if (bluetoothDevice.gatt.connected && characteristic_Lap) {
       return;
     }
-
-    let serviceUuid = '4fafc201-1fb5-459e-8fcc-c5c9c331914b';
     let CHARACTERISTIC_UUID_Name = 'beb5483e-36e1-4688-b7f5-ea07361b26a8';
     let CHARACTERISTIC_UUID_laps = 'beb5483e-36e1-4688-b7f5-ea07361b26a9';
     let CHARACTERISTIC_UUID_DeviceName = "beb5483e-36e1-4688-b7f5-ea07361b26aa";
     let CHARACTERISTIC_UUID_DevicePos = "beb5483e-36e1-4688-b7f5-ea07361b26ab";
 
     log('Connecting to GATT Server...');
-    const server = await device.gatt.connect();
+    const server = await bluetoothDevice.gatt.connect();
     const service = await server.getPrimaryService(serviceUuid);
     
     characteristic_Name = await service.getCharacteristic(CHARACTERISTIC_UUID_Name);
